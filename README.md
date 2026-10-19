@@ -22,10 +22,9 @@ A [Herdr](https://herdr.dev) plugin that renders a live multi-line **task & acti
 
 ## Features
 
-- **Compact agent list** — Every agent in the sidebar stays a clean 2-line entry (`state_icon workspace · tab` + `agent`).
+- **Compact, fixed-order agent list** — Every agent in the sidebar stays a clean 2-line entry (`state_icon workspace · tab` + `agent`) in its natural workspace/tab/pane order without swapping positions on focus change.
 - **Live multi-line summary below the list** — Displays the current session topic (`▸ …`), initial/latest user request (`task: …`, up to 5 wrapped lines), and real-time agent status or tool action (`now: …`, up to 7 dimmed wrapped lines).
 - **Hidden on non-agent tabs** — Switching to a regular shell/editor tab automatically hides the summary block so the sidebar stays clean.
-- **Click-safe summary area** — Uses Herdr's `agent.view.set` API to pin the active agent to the bottom of the list while attaching the summary rows directly to the focused agent's `pane_id`. Clicking anywhere on the summary text targets the already-focused pane and **never switches tabs or panes**.
 - **Instant focus response (<30 ms)** — Subscribes to `workspace.focused`, `tab.focused`, and `pane.focused` events over Herdr's Unix socket (`events.subscribe`) in addition to background transcript polling.
 - **Zero external dependencies** — Pure Node.js ES modules (`node >= 20`), GNU Stow symlink-safe `config.toml` management.
 

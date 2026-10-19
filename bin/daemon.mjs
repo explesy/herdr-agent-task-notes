@@ -2,12 +2,6 @@
 // Keeps the agent list in Herdr's sidebar compact (2 rows per agent) and renders
 // a live multi-line summary block BELOW the agent list for the currently focused
 // agent tab (hidden when switching to a tab without an agent).
-//
-// Click-safety: Herdr associates each agent's rendered rows (including custom
-// token rows) with that agent's `pane_id` hit rect. By attaching the summary
-// tokens directly to `focusedAgent.pane_id` and using `agent.view.set` (`b_pin`
-// token sort) to keep the focused agent at the bottom of the list, clicking the
-// summary text targets the already-focused pane and never switches tabs/panes.
 
 import { spawn } from "node:child_process";
 import fs from "node:fs";
@@ -22,7 +16,6 @@ import {
 	clearMetadata,
 	PLUGIN_ID,
 	reportMetadata,
-	setAgentView,
 	snapshot,
 	SOURCE,
 	subscribeEvents,
@@ -167,7 +160,7 @@ export function collect() {
 
 	const availableRows = computeAvailableBottomRows(snap);
 	const focusedInfo = resolveFocusedInfo(snap);
-	const anchorPaneId = focusedInfo?.paneId;
+	const anchorPaneId = agents[agents.length - 1].pane_id;
 	const bottomTokens = buildBottomTokens(focusedInfo, availableRows, LINE_WIDTH);
 
 	const panes = agents.map((a) => {
@@ -178,11 +171,7 @@ export function collect() {
 			status: a.agent_status,
 			focused: Boolean(a.focused),
 			isAnchor,
-			// Unfocused agents get `b_pin = "0"` so `agent.view.set` sorts them first
-			// in natural workspace/tab/pane order. The focused anchor agent leaves
-			// `b_pin` unset (`None` sorts after `Some("0")`), placing it at the very
-			// bottom of the `agents` list with its summary block right underneath.
-			tokens: isAnchor ? bottomTokens : { b_pin: "0" },
+			tokens: isAnchor ? bottomTokens : {},
 		};
 	});
 
@@ -261,9 +250,7 @@ async function status() {
 		console.log("herdr API: unreachable");
 		return 1;
 	}
-	const viewResp = running ? await setAgentView() : undefined;
-	const viewActive = Boolean(viewResp?.result?.active);
-	console.log(`anchor=${res.anchorPaneId ?? "none"} available_rows=${res.availableRows ?? 0} view_sorted=${viewActive}`);
+	console.log(`anchor=${res.anchorPaneId ?? "none"} available_rows=${res.availableRows ?? 0}`);
 	if (res.focusedInfo) {
 		console.log(`focused=${res.focusedInfo.paneId} header="${res.focusedInfo.header}"`);
 		if (res.focusedInfo.topic) console.log(`  topic: ${res.focusedInfo.topic}`);
@@ -277,11 +264,9 @@ async function status() {
 
 async function loop({ once = false, print = false } = {}) {
 	fs.mkdirSync(STATE_DIR, { recursive: true });
-	let viewSetAt = 0;
 	if (!print) {
 		ensureSidebarConfig();
-		const r = await setAgentView();
-		if (r?.result?.active) viewSetAt = Date.now();
+		await clearAgentView();
 	}
 	let seq = Date.now() * 1000;
 	const last = new Map();
@@ -321,10 +306,6 @@ async function loop({ once = false, print = false } = {}) {
 			return;
 		}
 		failures = 0;
-		if (!print && Date.now() - viewSetAt > 30000) {
-			viewSetAt = Date.now();
-			setAgentView().catch(() => {});
-		}
 		const seen = new Set();
 		for (const { paneId, isAnchor, tokens } of res.panes) {
 			seen.add(paneId);
