@@ -1,0 +1,41 @@
+id = "explesy.agent-task-notes"
+name = "Agent Task Notes"
+version = "0.2.1"
+min_herdr_version = "0.9.0"
+description = "Live bottom sidebar summary for active agent tabs (pi, codex, agy)"
+platforms = ["linux", "macos"]
+
+# Ensures the sidebar layout block in config.toml and starts a detached poller
+# once per Herdr server.
+[[startup]]
+command = ["node", "bin/daemon.mjs", "--start"]
+
+[[actions]]
+id = "on"
+title = "Task notes: start"
+contexts = ["workspace", "tab", "pane"]
+command = ["node", "bin/daemon.mjs", "--start"]
+
+[[actions]]
+id = "status"
+title = "Task notes: status"
+contexts = ["workspace", "tab", "pane"]
+command = ["node", "bin/daemon.mjs", "--status"]
+
+[[actions]]
+id = "refresh"
+title = "Task notes: refresh now"
+contexts = ["workspace", "tab", "pane"]
+command = ["node", "bin/daemon.mjs", "--once", "--print"]
+
+[[actions]]
+id = "off"
+title = "Task notes: stop and clear"
+contexts = ["workspace", "tab", "pane"]
+command = ["node", "bin/daemon.mjs", "--stop"]
+
+[[actions]]
+id = "uninstall"
+title = "Task notes: stop and remove sidebar layout"
+contexts = ["workspace", "tab", "pane"]
+command = ["node", "bin/daemon.mjs", "--uninstall"]

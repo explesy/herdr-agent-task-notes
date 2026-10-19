@@ -1,0 +1,41 @@
+{
+  "name": "herdr-agent-task-notes",
+  "version": "0.2.1",
+  "description": "Herdr sidebar plugin showing a live multi-line task/now summary below the agents list for the active agent tab (pi, codex, agy).",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "UbiQ <explesy@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/explesy/herdr-agent-task-notes.git"
+  },
+  "homepage": "https://github.com/explesy/herdr-agent-task-notes#readme",
+  "bugs": {
+    "url": "https://github.com/explesy/herdr-agent-task-notes/issues"
+  },
+  "keywords": [
+    "herdr",
+    "herdr-plugin",
+    "terminal",
+    "multiplexer",
+    "ai-agents",
+    "codex",
+    "pi",
+    "antigravity"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "herdr-task-notes": "./bin/daemon.mjs"
+  },
+  "scripts": {
+    "start": "node bin/daemon.mjs --start",
+    "stop": "node bin/daemon.mjs --stop",
+    "uninstall": "node bin/daemon.mjs --uninstall",
+    "status": "node bin/daemon.mjs --status",
+    "once": "node bin/daemon.mjs --once --print",
+    "test": "node --test"
+  }
+}
