@@ -3,27 +3,27 @@
 A [Herdr](https://herdr.dev) plugin that renders a live multi-line **task & activity summary** below the `agents` list in the left sidebar for the currently active agent tab (`pi`, `codex`, `agy`).
 
 ```text
-╭─ agents ─────────────╮
-│ ◦ acme-app · 2       │
-│   pi                 │
-│ ● acme-web · 3       │
-│   pi                 │
-│ ◦ acme-api · 2       │
-│   pi                 │
-│ ──────────────────── │
-│ ▸ acme-web·3 · pi    │
-│ task: add retry      │
-│ handling to the sync │
-│ job                  │
-│ now: Running tests:  │
-│ pnpm test            │
-╰──────────────────────╯
+╭─ agents ────────────────────╮
+│ ◦ acme-app · 2              │
+│   pi                        │
+│ ● acme-web · 3              │
+│   pi                        │
+│ ◦ acme-api · 2              │
+│   pi                        │
+│ ─────────────────────────── │
+│ ▸ acme-web·3 · pi           │
+│ deepseek-v4.1-flash · low   │
+│ task: add retry handling to │
+│ the sync job                │
+│ now: Running tests: pnpm    │
+│ test                        │
+╰─────────────────────────────╯
 ```
 
 ## Features
 
 - **Compact, fixed-order agent list** — Every agent in the sidebar stays a clean 2-line entry (`state_icon workspace · tab` + `agent`) in its natural workspace/tab/pane order without swapping positions on focus change.
-- **Live multi-line summary below the list** — Displays the current session topic (`▸ …`), initial/latest user request (`task: …`, up to 5 wrapped lines), and real-time agent status or tool action (`now: …`, up to 7 dimmed wrapped lines).
+- **Codex-style task details below the list** — Displays the current session topic (`▸ …`), model & reasoning effort (`model · effort`), user prompt (`task: …`, up to 5 wrapped lines), and real-time agent status or last message (`now: …`, up to 6 dimmed wrapped lines) with automatic URL/Markdown link compaction and wider sidebar (`sidebar_width = 34`).
 - **Hidden on non-agent tabs** — Switching to a regular shell/editor tab automatically hides the summary block so the sidebar stays clean.
 - **Instant focus response (<30 ms)** — Subscribes to `workspace.focused`, `tab.focused`, and `pane.focused` events over Herdr's Unix socket (`events.subscribe`) in addition to background transcript polling.
 - **Zero external dependencies** — Pure Node.js ES modules (`node >= 20`), GNU Stow symlink-safe `config.toml` management.
@@ -32,10 +32,10 @@ A [Herdr](https://herdr.dev) plugin that renders a live multi-line **task & acti
 
 | Agent | Source inspected |
 | :--- | :--- |
-| **`pi`** | `~/.pi/agent/sessions/**/*.jsonl` (matched by `agent_session` or workspace `cwd`) |
-| **`codex`** | `~/.codex/sessions/**/*.jsonl` (matched by `agent_session` UUID or workspace `cwd`) |
-| **`agy`** (Antigravity) | `~/.gemini/antigravity-cli/state/sessions/*.json` + `~/.gemini/antigravity/brain/<id>/.system_generated/logs/transcript.jsonl` |
-| **Fallback** | Live terminal screen scrape via `herdr pane get-screen` |
+| **`pi`** | `~/.config/pi/sessions/**/*.jsonl` (matched by `agent_session` or workspace `cwd`) |
+| **`codex`** | `~/.codex/state_5.sqlite` + `~/.codex/sessions/**/*.jsonl` + Codex Agent Command Center screen parser |
+| **`agy`** (Antigravity) | `~/.gemini/antigravity-cli` / `~/.gemini/antigravity` (`annotations/*.pbtxt` + `brain/<id>/.system_generated/logs/transcript.jsonl`) |
+| **Fallback** | Live terminal screen scrape via `herdr pane read` |
 
 ## Requirements
 
@@ -88,7 +88,7 @@ Environment variables (optional):
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `TASK_NOTES_INTERVAL_MS` | `1500` | Transcript polling interval in milliseconds |
-| `TASK_NOTES_WIDTH` | `22` | Character wrap width for summary lines |
+| `TASK_NOTES_WIDTH` | `29` | Character wrap width for summary lines |
 | `HERDR_CONFIG_PATH` | `~/.config/herdr/config.toml` | Path to Herdr's configuration file |
 | `HERDR_SOCKET_PATH` | `~/.config/herdr/herdr.sock` | Path to Herdr's Unix domain socket |
 

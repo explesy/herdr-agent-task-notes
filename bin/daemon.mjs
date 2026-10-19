@@ -25,7 +25,7 @@ const STATE_DIR = process.env.HERDR_PLUGIN_STATE_DIR ?? path.join(os.homedir(), 
 const PID_FILE = path.join(STATE_DIR, "daemon.pid");
 const LOG_FILE = path.join(STATE_DIR, "daemon.log");
 const INTERVAL_MS = Math.max(500, Number(process.env.TASK_NOTES_INTERVAL_MS ?? 1500));
-const LINE_WIDTH = Math.max(14, Number(process.env.TASK_NOTES_WIDTH ?? 22));
+const LINE_WIDTH = Math.max(14, Number(process.env.TASK_NOTES_WIDTH ?? 29));
 
 function log(...parts) {
 	try {
@@ -95,20 +95,21 @@ function resolveFocusedInfo(snap) {
 
 	const rawTitle = focusedAgent.terminal_title_stripped ?? focusedAgent.label ?? "";
 	const titleTopic = cleanTerminalTitle(rawTitle, wsLabel);
-	const topic = activity.topic || (titleTopic && titleTopic !== wsLabel ? titleTopic : undefined);
+	const topic = activity.topic || titleTopic || undefined;
 	const fallbackHeader = `${wsLabel}${tabSuffix} \u00b7 ${agentName}`;
 
 	return {
 		paneId: focusedAgent.pane_id,
 		header: topic ? `\u25b8 ${topic}` : `\u25b8 ${fallbackHeader}`,
 		topic,
+		meta: activity.meta,
 		task: activity.task,
 		now: activity.now,
 	};
 }
 
 export function buildBottomTokens(info, maxRows, width = LINE_WIDTH) {
-	if (!info || (!info.task && !info.now) || maxRows < 2) return {};
+	if (!info || (!info.task && !info.now && !info.meta) || maxRows < 2) return {};
 	const sep = "\u2500".repeat(width);
 	const top = clip(info.header, width);
 	if (maxRows === 2) {
@@ -120,16 +121,22 @@ export function buildBottomTokens(info, maxRows, width = LINE_WIDTH) {
 		b_top: top,
 	};
 
-	const remaining = Math.min(12, maxRows - 2); // Up to 5 task lines + 7 now lines
+	let usedHeaderRows = 2;
+	if (info.meta && maxRows >= 4) {
+		tokens.b_meta = clip(info.meta, width);
+		usedHeaderRows = 3;
+	}
+
+	const remaining = Math.min(11, Math.max(0, maxRows - usedHeaderRows)); // Up to 5 task lines + 6 now lines
 	const hasTask = Boolean(info.task);
 	const hasNow = Boolean(info.now);
 
-	if (hasTask && hasNow) {
+	if (hasTask && hasNow && remaining >= 2) {
 		const taskMax = Math.min(5, Math.max(1, Math.floor(remaining * 0.42)));
-		const nowMax = Math.min(7, Math.max(1, remaining - taskMax));
+		const nowMax = Math.min(6, Math.max(1, remaining - taskMax));
 		const tLines = wrapLines(`task: ${info.task}`, width, taskMax);
 		const usedTask = tLines.length;
-		const actualNowMax = Math.min(7, Math.max(1, remaining - usedTask));
+		const actualNowMax = Math.min(6, Math.max(1, remaining - usedTask));
 		const nLines = wrapLines(`now: ${info.now}`, width, actualNowMax);
 		tLines.forEach((line, idx) => {
 			tokens[`b_t${idx + 1}`] = line;
@@ -137,13 +144,13 @@ export function buildBottomTokens(info, maxRows, width = LINE_WIDTH) {
 		nLines.forEach((line, idx) => {
 			tokens[`b_n${idx + 1}`] = line;
 		});
-	} else if (hasTask) {
+	} else if (hasTask && remaining >= 1) {
 		const tLines = wrapLines(`task: ${info.task}`, width, Math.min(5, remaining));
 		tLines.forEach((line, idx) => {
 			tokens[`b_t${idx + 1}`] = line;
 		});
-	} else if (hasNow) {
-		const nLines = wrapLines(`now: ${info.now}`, width, Math.min(7, remaining));
+	} else if (hasNow && remaining >= 1) {
+		const nLines = wrapLines(`now: ${info.now}`, width, Math.min(6, remaining));
 		nLines.forEach((line, idx) => {
 			tokens[`b_n${idx + 1}`] = line;
 		});
@@ -254,6 +261,7 @@ async function status() {
 	if (res.focusedInfo) {
 		console.log(`focused=${res.focusedInfo.paneId} header="${res.focusedInfo.header}"`);
 		if (res.focusedInfo.topic) console.log(`  topic: ${res.focusedInfo.topic}`);
+		if (res.focusedInfo.meta) console.log(`  meta:  ${res.focusedInfo.meta}`);
 		if (res.focusedInfo.task) console.log(`  task:  ${res.focusedInfo.task}`);
 		if (res.focusedInfo.now) console.log(`  now:   ${res.focusedInfo.now}`);
 	} else {

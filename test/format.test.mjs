@@ -11,34 +11,39 @@ test("wrapLines wraps text across multiple lines and ellipsizes overflow", () =>
 	}
 });
 
-test("cleanProse strips markdown headers, bullets, and code fences", () => {
-	const raw = "# Heading\n- **bold item** with `code`\n```js\nconsole.log(1);\n```";
+test("cleanProse strips markdown headers, bullets, links, and compacts URLs", () => {
+	const raw =
+		"# Heading\n- **bold item** with `code` and [README.md](/Users/user/notes/README.md:35) plus https://example.com/docs?foo=bar\n```js\nconsole.log(1);\n```";
 	const cleaned = cleanProse(raw);
-	assert.equal(cleaned, "bold item with code");
+	assert.equal(cleaned, "bold item with code and README.md plus example.com/docs");
 });
 
-test("cleanTerminalTitle strips spinners and workspace suffixes", () => {
+test("cleanTerminalTitle strips spinners, leading dashes, and workspace suffixes", () => {
 	assert.equal(cleanTerminalTitle("⠋ Fix click bug · acme-app", "acme-app"), "Fix click bug");
 	assert.equal(cleanTerminalTitle("● Build plugin · notes"), "Build plugin");
+	assert.equal(cleanTerminalTitle("π - acme-web", "acme-web"), "");
+	assert.equal(cleanTerminalTitle("~/n/acme-cli", "acme-cli"), "");
 });
 
 test("buildBottomTokens returns empty object when no agent is focused", () => {
-	assert.deepEqual(buildBottomTokens(undefined, 10, 22), {});
+	assert.deepEqual(buildBottomTokens(undefined, 10, 29), {});
 });
 
-test("buildBottomTokens formats separator, header, task, and now lines", () => {
+test("buildBottomTokens formats separator, header, meta, task, and now lines", () => {
 	const tokens = buildBottomTokens(
 		{
 			paneId: "w3:p2",
 			header: "▸ Fix click bug",
+			meta: "gpt-6-luna · high",
 			task: "Prevent pane switch on click",
 			now: "Running tests",
 		},
 		10,
-		22,
+		29,
 	);
-	assert.equal(tokens.b_sep, "─".repeat(22));
+	assert.equal(tokens.b_sep, "─".repeat(29));
 	assert.equal(tokens.b_top, "▸ Fix click bug");
+	assert.equal(tokens.b_meta, "gpt-6-luna · high");
 	assert.ok(tokens.b_t1?.startsWith("task: "));
 	assert.ok(tokens.b_n1?.startsWith("now: "));
 	assert.equal(clip("short", 10), "short");
