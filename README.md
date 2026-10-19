@@ -88,7 +88,7 @@ Environment variables (optional):
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `TASK_NOTES_INTERVAL_MS` | `1500` | Transcript polling interval in milliseconds |
-| `TASK_NOTES_WIDTH` | `29` | Character wrap width for summary lines |
+| `TASK_NOTES_WIDTH` | `21` | Character wrap width for summary lines (matches default 26-column Herdr sidebar) |
 | `HERDR_CONFIG_PATH` | `~/.config/herdr/config.toml` | Path to Herdr's configuration file |
 | `HERDR_SOCKET_PATH` | `~/.config/herdr/herdr.sock` | Path to Herdr's Unix domain socket |
 

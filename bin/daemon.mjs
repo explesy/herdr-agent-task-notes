@@ -25,7 +25,7 @@ const STATE_DIR = process.env.HERDR_PLUGIN_STATE_DIR ?? path.join(os.homedir(), 
 const PID_FILE = path.join(STATE_DIR, "daemon.pid");
 const LOG_FILE = path.join(STATE_DIR, "daemon.log");
 const INTERVAL_MS = Math.max(500, Number(process.env.TASK_NOTES_INTERVAL_MS ?? 1500));
-const LINE_WIDTH = Math.max(14, Number(process.env.TASK_NOTES_WIDTH ?? 29));
+const LINE_WIDTH = Math.max(14, Number(process.env.TASK_NOTES_WIDTH ?? 21));
 
 function log(...parts) {
 	try {

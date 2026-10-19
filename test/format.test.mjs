@@ -26,7 +26,7 @@ test("cleanTerminalTitle strips spinners, leading dashes, and workspace suffixes
 });
 
 test("buildBottomTokens returns empty object when no agent is focused", () => {
-	assert.deepEqual(buildBottomTokens(undefined, 10, 29), {});
+	assert.deepEqual(buildBottomTokens(undefined, 10, 21), {});
 });
 
 test("buildBottomTokens formats separator, header, meta, task, and now lines", () => {
@@ -39,9 +39,9 @@ test("buildBottomTokens formats separator, header, meta, task, and now lines", (
 			now: "Running tests",
 		},
 		10,
-		29,
+		21,
 	);
-	assert.equal(tokens.b_sep, "─".repeat(29));
+	assert.equal(tokens.b_sep, "─".repeat(21));
 	assert.equal(tokens.b_top, "▸ Fix click bug");
 	assert.equal(tokens.b_meta, "gpt-6-luna · high");
 	assert.ok(tokens.b_t1?.startsWith("task: "));
