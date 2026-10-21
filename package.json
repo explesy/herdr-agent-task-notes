@@ -1,7 +1,7 @@
 {
   "name": "herdr-agent-task-notes",
   "version": "0.2.1",
-  "description": "Herdr sidebar plugin showing a live multi-line task/now summary below the agents list for the active agent tab (pi, codex, agy).",
+  "description": "Herdr sidebar plugin showing a live multi-line task/now summary below the agents list for the active agent tab (pi, codex, opencode, agy).",
   "type": "module",
   "private": false,
   "license": "MIT",
@@ -21,6 +21,7 @@
     "multiplexer",
     "ai-agents",
     "codex",
+    "opencode",
     "pi",
     "antigravity"
   ],

@@ -1,6 +1,6 @@
 # herdr-agent-task-notes
 
-A [Herdr](https://herdr.dev) plugin that renders a live multi-line **task & activity summary** below the `agents` list in the left sidebar for the currently active agent tab (`pi`, `codex`, `agy`).
+A [Herdr](https://herdr.dev) plugin that renders a live multi-line **task & activity summary** below the `agents` list in the left sidebar for the currently active agent tab (`pi`, `codex`, `opencode`, `agy`).
 
 ```text
 ╭─ agents ────────────────────╮
@@ -34,8 +34,9 @@ A [Herdr](https://herdr.dev) plugin that renders a live multi-line **task & acti
 | :--- | :--- |
 | **`pi`** | `~/.config/pi/sessions/**/*.jsonl` (matched by `agent_session` or workspace `cwd`) |
 | **`codex`** | `~/.codex/state_5.sqlite` + `~/.codex/sessions/**/*.jsonl` + Codex Agent Command Center screen parser |
+| **`opencode`** | `~/.local/share/opencode/opencode.db` (`session_v2` + `session_message`; matched by `agent_session` or workspace `cwd`) |
 | **`agy`** (Antigravity) | `~/.gemini/antigravity-cli` / `~/.gemini/antigravity` (`annotations/*.pbtxt` + `brain/<id>/.system_generated/logs/transcript.jsonl`) |
-| **Fallback** | Live terminal screen scrape via `herdr pane read` |
+| **Fallback** | Live terminal screen scrape via `herdr pane read` (TUI status bars and hotkey footers are filtered out) |
 
 ## Requirements
 
@@ -91,6 +92,7 @@ Environment variables (optional):
 | `TASK_NOTES_WIDTH` | `21` | Character wrap width for summary lines (matches default 26-column Herdr sidebar) |
 | `HERDR_CONFIG_PATH` | `~/.config/herdr/config.toml` | Path to Herdr's configuration file |
 | `HERDR_SOCKET_PATH` | `~/.config/herdr/herdr.sock` | Path to Herdr's Unix domain socket |
+| `OPENCODE_DB_PATH` | `~/.local/share/opencode/opencode.db` | Path to OpenCode's state database (read-only) |
 
 ## Publishing to the Herdr Plugin Directory
 

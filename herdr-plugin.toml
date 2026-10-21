@@ -2,7 +2,7 @@ id = "explesy.agent-task-notes"
 name = "Agent Task Notes"
 version = "0.2.1"
 min_herdr_version = "0.9.0"
-description = "Live bottom sidebar summary for active agent tabs (pi, codex, agy)"
+description = "Live bottom sidebar summary for active agent tabs (pi, codex, opencode, agy)"
 platforms = ["linux", "macos"]
 
 # Ensures the sidebar layout block in config.toml and starts a detached poller
